@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Splashscreen" parent="Theme.AppCompat.Light.NoActionBar">
+
+    </style>
+
+    <style name="TextViewStyle">
+        <item name="android:textAppearance"></item>
+    </style>
+
+    <style name="Title" parent="@style/NRG">
+        <item name="android:textSize">18.0sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="NRG" parent="@style/TextAppearance.AppCompat">
+        <item name="android:fontFamily">@string/fontFamilyRobotoRegular</item>
+    </style>
+
+    <string name="fontFamilyRobotoRegular">Robot</string>
+</resources>
