@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -64,7 +64,8 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Intent intent = new Intent(getApplicationContext(), PlayerService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+
         initView();
     }
 
@@ -125,12 +126,12 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Music music) {
         if (!mplayer.isPlaying()) {
-            mplayer.prepareExoPlayerFromURL(Uri.parse(music.getStreamlink()));
+            mplayer.prepareExoPlayerFromURL(music);
             mplayer.PlayPause(true);
             isplaying = mplayer.isPlaying();
         } else {
             mplayer.stopPlay();
-            mplayer.prepareExoPlayerFromURL(Uri.parse(music.getStreamlink()));
+            mplayer.prepareExoPlayerFromURL(music);
             mplayer.PlayPause(true);
             isplaying = mplayer.isPlaying();
         }
