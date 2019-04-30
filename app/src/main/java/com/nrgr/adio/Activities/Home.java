@@ -32,14 +32,13 @@ import org.greenrobot.eventbus.ThreadMode;
 public class Home extends AppCompatActivity implements View.OnClickListener {
 
 
-    PlayerService mplayer;
+
     private boolean isplaying = false;
-    private FrameLayout framedata;
     private ImageView nowplayingimage;
     private TextView nowplaying;
     private ImageButton btnplaying;
     private LinearLayout bottomnavigation;
-    private boolean isstarted = false;
+
 
 
     @Override
@@ -52,7 +51,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     private void initView() {
 
         showFragment(new listmusic(), "Home");
-        framedata = findViewById(R.id.framedata);
+        FrameLayout framedata = findViewById(R.id.framedata);
         framedata.setOnClickListener(this);
         nowplayingimage = findViewById(R.id.nowplayingimage);
         nowplaying = findViewById(R.id.nowplaying);
@@ -107,7 +106,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
         if (isplaying) {
             sendCommand(Constants.PLAY_ACTION);
         } else {
-
             sendCommand(Constants.START);
             isplaying = true;
         }
@@ -119,6 +117,9 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     public void onMessageEvent(String event) {
         if (event.equals(Constants.START)) {
             sendCommand(Constants.START);
+        } else if (event.equals(Constants.PAUSE_ACTION)) {
+            isplaying = false;
+            btnplaying.setImageResource(R.drawable.ic_pausebutton);
         }
 
     }
@@ -165,7 +166,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
                 btnplaying.setImageResource(R.drawable.ic_playbutton);
                 isplaying = false;
             } else {
-                sendCommand(Constants.PLAY_ACTION);
+                sendCommand(Constants.RESUME);
                 btnplaying.setImageResource(R.drawable.ic_pausebutton);
                 isplaying = true;
             }

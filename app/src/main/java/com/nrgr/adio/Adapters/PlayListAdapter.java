@@ -78,9 +78,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
             EventBus.getDefault().post(Constants.START);
             new Handler().postDelayed(() -> {
                 EventBus.getDefault().postSticky(music);
-                holder.btnPlay.setPlayed(true);
-                playingposition = position;
-                holder.btnPlay.startAnimation();
                 notifyDataSetChanged();
             }, 300);
 

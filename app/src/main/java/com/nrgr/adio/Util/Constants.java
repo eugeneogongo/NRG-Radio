@@ -7,4 +7,5 @@ public interface Constants {
     String MAIN_ACTION = "MAIN_ACTION";
     int NOTIFICATION_ID = 12121212;
     String PAUSE_ACTION = "PAUSE";
+    String RESUME = "resume";
 }

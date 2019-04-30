@@ -163,6 +163,12 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
                 exoPlayer.setPlayWhenReady(false);
                 stopForeground(true);
                 break;
+            case Constants.RESUME:
+                showNotification(tempmusic);
+                registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
+                exoPlayer.setPlayWhenReady(true);
+                isPlaying = true;
+                break;
         }
         return START_STICKY;
     }
