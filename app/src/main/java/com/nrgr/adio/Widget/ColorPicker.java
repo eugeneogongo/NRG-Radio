@@ -25,4 +25,15 @@ public class ColorPicker {
         }
         return backgroundColor;
     }
+
+    public static int getLight(Bitmap bitmap, Context mContext) {
+        Palette p = createPaletteSync(bitmap);
+        Palette.Swatch vibrantSwatch = p.getLightVibrantSwatch();
+        int backgroundColor = ContextCompat.getColor(mContext, R.color.colorAccent);
+        // Check that the Vibrant swatch is available
+        if (vibrantSwatch != null) {
+            backgroundColor = vibrantSwatch.getRgb();
+        }
+        return backgroundColor;
+    }
 }

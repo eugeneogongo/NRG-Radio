@@ -1,15 +1,11 @@
 package com.nrgr.adio.Activities;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -24,6 +20,7 @@ import com.nrgr.adio.Fragments.listmusic;
 import com.nrgr.adio.Media.PlayerService;
 import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
+import com.nrgr.adio.Util.Constants;
 import com.nrgr.adio.Widget.ColorPicker;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -34,38 +31,21 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class Home extends AppCompatActivity implements View.OnClickListener {
 
-    boolean isBound = false;
-    PlayerService.ServiceBinder binder;
+
     PlayerService mplayer;
-    ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            binder = (PlayerService.ServiceBinder) iBinder;
-            mplayer = binder.getService();
-            isBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-            Log.e(Home.class.getCanonicalName(), "onServiceDisconnected");
-            isBound = false;
-        }
-    };
     private boolean isplaying = false;
     private FrameLayout framedata;
     private ImageView nowplayingimage;
     private TextView nowplaying;
     private ImageButton btnplaying;
     private LinearLayout bottomnavigation;
+    private boolean isstarted = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Intent intent = new Intent(getApplicationContext(), PlayerService.class);
-        getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-
         initView();
     }
 
@@ -91,6 +71,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override
@@ -111,11 +92,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unbind from the service
-        if (isBound) {
-            getApplicationContext().unbindService(mConnection);
-            isBound = false;
-        }
+
     }
 
     @Override
@@ -123,22 +100,40 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
         super.onPause();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Music music) {
-        if (!mplayer.isPlaying()) {
-            mplayer.prepareExoPlayerFromURL(music);
-            mplayer.PlayPause(true);
-            isplaying = mplayer.isPlaying();
+
+
+        if (isplaying) {
+            sendCommand(Constants.PLAY_ACTION);
         } else {
-            mplayer.stopPlay();
-            mplayer.prepareExoPlayerFromURL(music);
-            mplayer.PlayPause(true);
-            isplaying = mplayer.isPlaying();
+
+            sendCommand(Constants.START);
+            isplaying = true;
         }
+
         UpdateNowPlaying(music);
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(String event) {
+        if (event.equals(Constants.START)) {
+            sendCommand(Constants.START);
+        }
 
     }
 
+    private void sendCommand(String command) {
+        Intent playservice = new Intent(Home.this, PlayerService.class);
+        playservice.setAction(command);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(playservice);
+        } else {
+            startService(playservice);
+        }
+
+
+    }
     private void UpdateNowPlaying(Music music) {
         btnplaying.setImageResource(R.drawable.ic_pausebutton);
         bottomnavigation.setVisibility(View.VISIBLE);
@@ -158,26 +153,23 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
             }
         });
         nowplaying.setText(music.getTitle());
+
     }
 
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnplaying:
-                if (mplayer == null) return;
-                if (isplaying) {
-                    mplayer.PlayPause(false);
-                    btnplaying.setImageResource(R.drawable.ic_playbutton);
-                    isplaying = false;
-
-                } else {
-                    mplayer.PlayPause(true);
-                    btnplaying.setImageResource(R.drawable.ic_pausebutton);
-                    isplaying = true;
-                }
-
-                break;
+        if (v.getId() == R.id.btnplaying) {
+            if (isplaying) {
+                sendCommand(Constants.PAUSE_ACTION);
+                btnplaying.setImageResource(R.drawable.ic_playbutton);
+                isplaying = false;
+            } else {
+                sendCommand(Constants.PLAY_ACTION);
+                btnplaying.setImageResource(R.drawable.ic_pausebutton);
+                isplaying = true;
+            }
         }
+
     }
 }

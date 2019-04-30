@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nrgr.adio.Adapters.PlayListAdapter;
@@ -44,10 +45,14 @@ public class listmusic extends Fragment {
     private void initView(View view) {
         playlist = view.findViewById(R.id.playlist);
         adapter = new PlayListAdapter(getActivity());
-        LinearLayoutManager linearLayout = new LinearLayoutManager(getActivity());
-        playlist.setLayoutManager(linearLayout);
+
+        adapter.setHasStableIds(true);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        playlist.setLayoutManager(layoutManager);
         playlist.setHasFixedSize(true);
         playlist.setAdapter(adapter);
+        playlist.setItemAnimator(new DefaultItemAnimator());
+
     }
 
     @Override

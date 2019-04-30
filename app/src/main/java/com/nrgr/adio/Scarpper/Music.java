@@ -1,6 +1,5 @@
 package com.nrgr.adio.Scarpper;
 
-
 public class Music {
 
     private String title, piclink, streamlink;
@@ -25,7 +24,7 @@ public class Music {
         return streamlink;
     }
 
-    void setStreamlink(String streamlink) {
+    public void setStreamlink(String streamlink) {
         this.streamlink = streamlink;
     }
 

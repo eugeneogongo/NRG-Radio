@@ -3,20 +3,22 @@ package com.nrgr.adio.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
+import com.nrgr.adio.Util.Constants;
 import com.nrgr.adio.Widget.ColorPicker;
+import com.nrgr.adio.Widget.PlayPauseButton;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
@@ -31,7 +33,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
     private Context context;
     private List<Music> musicList = new ArrayList<>();
-
+    int playingposition = 0;
     public PlayListAdapter(Context context) {
         this.context = context;
 
@@ -51,7 +53,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         Music music = musicList.get(position);
         int cacheSize = 15 * 1024 * 1024; // 4MiB
         Picasso picload = new Picasso.Builder(context).memoryCache(new LruCache(cacheSize)).build();
@@ -60,8 +61,9 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
             public void onSuccess() {
                 BitmapDrawable drawable = (BitmapDrawable) holder.imgHero.getDrawable();
                 final Bitmap bitmap = drawable.getBitmap();
-                int color = ColorPicker.getColor(bitmap, context);
-                holder.musiccard.setBackgroundColor(color);
+
+                holder.btnPlay.setColor(ColorPicker.getLight(bitmap, context));
+                holder.musiccard.setBackgroundColor(ColorPicker.getColor(bitmap, context));
             }
 
             @Override
@@ -69,9 +71,21 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
             }
         });
+
         holder.txtMusicname.setText(music.getTitle());
         holder.btnPlay.setOnClickListener(view -> {
-            EventBus.getDefault().post(music);
+
+            EventBus.getDefault().post(Constants.START);
+            new Handler().postDelayed(() -> {
+                EventBus.getDefault().postSticky(music);
+                holder.btnPlay.setPlayed(true);
+                playingposition = position;
+                holder.btnPlay.startAnimation();
+                notifyDataSetChanged();
+            }, 300);
+
+
+
 
         });
 
@@ -82,11 +96,15 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
         return musicList.size();
     }
 
+    public long getItemId(int position) {
+        return (long) musicList.get(position).hashCode();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgHero;
-        ImageButton btnPlay;
+        PlayPauseButton btnPlay;
         TextView txtMusicname;
-        CardView musiccard;
+        FrameLayout musiccard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -94,6 +112,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
             imgHero = itemView.findViewById(R.id.imgHero);
             txtMusicname = itemView.findViewById(R.id.txtPlaylistname);
             musiccard = itemView.findViewById(R.id.musiccard);
+            btnPlay.setBackgroundResource(R.drawable.circularbg);
         }
     }
 }
