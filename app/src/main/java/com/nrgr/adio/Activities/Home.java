@@ -63,7 +63,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
 
     private void showFragment(Fragment fragment, String Tag) {
         getSupportFragmentManager().
-                beginTransaction().addToBackStack(Tag)
+                beginTransaction()
                 .replace(R.id.framedata, fragment).commit();
     }
 
@@ -81,7 +81,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
         super.onStart();
     }
 
-    @Override
+       @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
 
@@ -154,7 +154,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
             }
         });
         nowplaying.setText(music.getTitle());
-
     }
 
 

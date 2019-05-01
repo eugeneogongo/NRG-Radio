@@ -9,6 +9,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.nrgr.adio.Scarpper.Music;
 import com.nrgr.adio.Scarpper.MusicList;
+import com.nrgr.adio.Util.Constants;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,7 @@ public class ViewData extends ViewModel {
                 @Override
                 public void OnFailure(String error) {
                     Log.i(error, error);
+                    EventBus.getDefault().post(Constants.NOINTERNET);
                 }
             });
 

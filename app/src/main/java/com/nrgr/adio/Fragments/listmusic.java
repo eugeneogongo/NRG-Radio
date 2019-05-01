@@ -13,10 +13,16 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.facebook.shimmer.ShimmerFrameLayout;
 import com.nrgr.adio.Adapters.PlayListAdapter;
 import com.nrgr.adio.R;
+import com.nrgr.adio.Util.Constants;
 import com.nrgr.adio.ViewModel.ViewData;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import com.nrg.radio.PageLoader;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +33,7 @@ public class listmusic extends Fragment {
     PlayListAdapter adapter;
     private RecyclerView playlist;
     private ViewData _View_data;
+    private PageLoader pageloader;
 
     public listmusic() {
         // Required empty public constructor
@@ -44,9 +51,10 @@ public class listmusic extends Fragment {
     }
 
     private void initView(View view) {
+        pageloader = view.findViewById(R.id.pageloader);
+        pageloader.startProgress();
         playlist = view.findViewById(R.id.playlist);
         adapter = new PlayListAdapter(getActivity());
-
         adapter.setHasStableIds(true);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         playlist.setLayoutManager(layoutManager);
@@ -57,12 +65,35 @@ public class listmusic extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+
+        super.onStop();
+    }
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(String event) {
+       if(event.equals(Constants.NOINTERNET)){
+           pageloader.stopProgressAndFailed();
+       }
+
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         _View_data = ViewModelProviders.of(getActivity()).get(ViewData.class);
         _View_data.getPlaylist().observe(getActivity(), music -> {
             adapter.setMusicList(music);
             adapter.notifyDataSetChanged();
+            playlist.setVisibility(View.VISIBLE);
+            pageloader.stopProgress();
+            pageloader.setVisibility(View.GONE);
         });
     }
 }
