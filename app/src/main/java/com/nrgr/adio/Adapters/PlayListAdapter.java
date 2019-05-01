@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +19,6 @@ import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
 import com.nrgr.adio.Util.Constants;
 import com.nrgr.adio.Widget.ColorPicker;
-import com.nrgr.adio.Widget.PlayPauseButton;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
@@ -33,12 +33,15 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
     private Context context;
     private List<Music> musicList = new ArrayList<>();
-    int playingposition = 0;
+    static  boolean wasplaying = false;
+   public static int previousplaying = -1;
     public PlayListAdapter(Context context) {
         this.context = context;
 
     }
-
+    public  Music get(int i){
+        return musicList.get(i);
+    }
     public void setMusicList(List<Music> musicList) {
         this.musicList = musicList;
     }
@@ -54,15 +57,11 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Music music = musicList.get(position);
-        int cacheSize = 15 * 1024 * 1024; // 4MiB
-        Picasso picload = new Picasso.Builder(context).memoryCache(new LruCache(cacheSize)).build();
-        Picasso.get().load(music.getPiclink()).noFade().into(holder.imgHero, new Callback() {
+        Picasso.get().load(music.getPiclink()).placeholder(R.drawable.nrgradio).into(holder.imgHero, new Callback() {
             @Override
             public void onSuccess() {
                 BitmapDrawable drawable = (BitmapDrawable) holder.imgHero.getDrawable();
                 final Bitmap bitmap = drawable.getBitmap();
-
-                holder.btnPlay.setColor(ColorPicker.getLight(bitmap, context));
                 holder.musiccard.setBackgroundColor(ColorPicker.getColor(bitmap, context));
             }
 
@@ -71,20 +70,57 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
             }
         });
-
+        if(music.isIsplaying()){
+            holder.btnPlay.setImageResource(R.drawable.ic_pausebutton);
+        }else{
+            holder.btnPlay.setImageResource(R.drawable.ic_playbutton);
+        }
         holder.txtMusicname.setText(music.getTitle());
-        holder.btnPlay.setOnClickListener(view -> {
-
-            EventBus.getDefault().post(Constants.START);
-            new Handler().postDelayed(() -> {
-                EventBus.getDefault().postSticky(music);
-                notifyDataSetChanged();
-            }, 300);
-
-
-
-
+        holder.btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(music.isIsplaying()){
+                   sendPause(music);
+                }else{
+                    sendPlayMedia(music,position);
+                }
+            }
         });
+    }
+
+    private void sendPause(Music music){
+        wasplaying = true;
+        EventBus.getDefault().post(Constants.PAUSE_ACTION);
+       music.setIsplaying(false);
+       musicList.set(previousplaying,music);
+       previousplaying = -1;
+       EventBus.getDefault().post(Constants.DataSetChanged);
+    }
+
+    /**
+     * Plays Send Play Music
+     * @param music
+     * @param position
+     */
+    private void sendPlayMedia(Music music, int position){
+         EventBus.getDefault().post(Constants.START);
+        new Handler().postDelayed(() -> EventBus.getDefault().postSticky(music), 300);
+
+        if(previousplaying !=- 1){
+            Music music1 = musicList.get(previousplaying);
+            music1.setIsplaying(false);
+            music.setIsplaying(true);
+            musicList.set(previousplaying,music1);
+            musicList.set(position,music);
+            previousplaying = position;
+
+        }else{
+            previousplaying = position;
+            music.setIsplaying(true);
+            musicList.set(position,music);
+        }
+
+        EventBus.getDefault().post(Constants.DataSetChanged);
 
     }
 
@@ -99,7 +135,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgHero;
-        PlayPauseButton btnPlay;
+        ImageView btnPlay;
         TextView txtMusicname;
         FrameLayout musiccard;
 

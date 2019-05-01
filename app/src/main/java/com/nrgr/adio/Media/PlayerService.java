@@ -156,20 +156,23 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
                 registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
                 break;
             case Constants.PLAY_ACTION:
-                registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
                 exoPlayer.setPlayWhenReady(true);
-                isPlaying = true;
+                registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
+
                 break;
             case Constants.PAUSE_ACTION:
                 exoPlayer.removeListener(this);
                 exoPlayer.setPlayWhenReady(false);
-                stopForeground(true);
                 break;
             case Constants.RESUME:
                 showNotification(tempmusic);
+                prepareExoPlayerFromURL(tempmusic);
+                exoPlayer.addListener(this);
                 registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
-                exoPlayer.setPlayWhenReady(true);
-                isPlaying = true;
+
+                break;
+            case Constants.STOP:
+                stopForeground(true);
                 break;
         }
         return START_STICKY;
@@ -312,6 +315,8 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
         tempmusic = music;
         showNotification(music);
         prepareExoPlayerFromURL(music);
+
+        EventBus.getDefault().removeAllStickyEvents();
 
     }
 

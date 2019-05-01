@@ -117,9 +117,17 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     public void onMessageEvent(String event) {
         if (event.equals(Constants.START)) {
             sendCommand(Constants.START);
+            isplaying = true;
+            btnplaying.setImageResource(R.drawable.ic_pausebutton);
         } else if (event.equals(Constants.PAUSE_ACTION)) {
             isplaying = false;
+            btnplaying.setImageResource(R.drawable.ic_playbutton);
+            sendCommand(Constants.PAUSE_ACTION);
+        }else if(event.equals(Constants.RESUME)){
+            sendCommand(Constants.RESUME);
             btnplaying.setImageResource(R.drawable.ic_pausebutton);
+            isplaying = true;
+
         }
 
     }
@@ -164,10 +172,12 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
                 sendCommand(Constants.PAUSE_ACTION);
                 btnplaying.setImageResource(R.drawable.ic_playbutton);
                 isplaying = false;
+                EventBus.getDefault().post(Constants.PlAYBACK_PAUSE);
             } else {
                 sendCommand(Constants.RESUME);
                 btnplaying.setImageResource(R.drawable.ic_pausebutton);
                 isplaying = true;
+                EventBus.getDefault().post(Constants.PLAYBACK_RESUME);
             }
         }
 

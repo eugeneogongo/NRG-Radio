@@ -9,4 +9,8 @@ public interface Constants {
     String PAUSE_ACTION = "PAUSE";
     String RESUME = "resume";
     String NOINTERNET = "No internet";
+    String DataSetChanged = "Data Changed";
+    String STOP = "STOP";
+    String PlAYBACK_PAUSE = "Playback pause";
+    String PLAYBACK_RESUME = "Playback Resume";
 }

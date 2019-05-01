@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nrgr.adio.Adapters.PlayListAdapter;
 import com.nrgr.adio.R;
+import com.nrgr.adio.Scarpper.Music;
 import com.nrgr.adio.Util.Constants;
 import com.nrgr.adio.ViewModel.ViewData;
 
@@ -80,6 +81,18 @@ public class listmusic extends Fragment {
     public void onMessageEvent(String event) {
        if(event.equals(Constants.NOINTERNET)){
            pageloader.stopProgressAndFailed();
+       }else if(event.equals(Constants.DataSetChanged)){
+           adapter.notifyDataSetChanged();
+       }else if(event.equals(Constants.PlAYBACK_PAUSE) && PlayListAdapter.previousplaying != -1) {
+           Music music = adapter.get(PlayListAdapter.previousplaying);
+           music.setIsplaying(false);
+           adapter.notifyItemChanged(PlayListAdapter.previousplaying, music);
+           adapter.notifyDataSetChanged();
+       }else if(event.equals(Constants.PLAYBACK_RESUME)){
+           Music music = adapter.get(PlayListAdapter.previousplaying);
+           music.setIsplaying(true);
+           adapter.notifyItemChanged(PlayListAdapter.previousplaying, music);
+           adapter.notifyDataSetChanged();
        }
 
     }

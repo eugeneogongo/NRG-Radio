@@ -13,8 +13,8 @@
         android:orientation="vertical">
 
 
-        <RelativeLayout
-        android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -26,30 +26,22 @@
             android:layout_margin="5dp"
             android:padding="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/splash"
-            app:layout_constraintBottom_toBottomOf="@+id/btnplay"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:src="@drawable/splash"/>
 
-            <com.nrgr.adio.Widget.PlayPauseButton
+            <ImageButton
             android:id="@+id/btnplay"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-            android:layout_below="@+id/imgHero"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="-63dp"
-            android:layout_marginEnd="26dp"
-            android:layout_marginRight="26dp"
-                android:background="@drawable/circularbg"
-            android:contentDescription="Play/pause button"
+                android:layout_width="60dp"
+                android:src="@drawable/ic_playbutton"
+                android:layout_gravity="center"
+                android:layout_height="60dp"
+                 android:background="@drawable/circularbg"
+                 android:contentDescription="Play/pause button"
                 android:elevation="3dp"
             android:padding="10dp"
             android:scaleType="fitXY"
             android:tint="@android:color/white" />
 
-        </RelativeLayout>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/txtPlaylistname"

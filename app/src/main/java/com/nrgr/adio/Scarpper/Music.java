@@ -2,6 +2,16 @@ package com.nrgr.adio.Scarpper;
 
 public class Music {
 
+    private boolean isplaying = false;
+
+    public boolean isIsplaying() {
+        return isplaying;
+    }
+
+    public void setIsplaying(boolean isplaying) {
+        this.isplaying = isplaying;
+    }
+
     private String title, piclink, streamlink;
 
     public String getTitle() {
