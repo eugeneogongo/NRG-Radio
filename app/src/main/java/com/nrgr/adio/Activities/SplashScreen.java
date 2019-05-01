@@ -46,13 +46,10 @@ public class SplashScreen extends AppCompatActivity {
         loader = findViewById(R.id.loader);
         ViewData _View_data = ViewModelProviders.of(this).get(ViewData.class);
         //Start home after the ball bounce animation ends
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashScreen.this, Home.class);
-                startActivity(intent);
-                finish();
-            }
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(SplashScreen.this, Home.class);
+            startActivity(intent);
+            finish();
         }, (loader.getMovieDuration() + 1000));
     }
 

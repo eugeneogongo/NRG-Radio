@@ -62,7 +62,7 @@ dependencies {
     // optional - Test helpers for LiveData
     testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
-
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
     implementation 'com.google.android.exoplayer:exoplayer:2.8.0'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.8.0'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.8.0'
