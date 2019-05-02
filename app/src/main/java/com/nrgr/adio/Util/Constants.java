@@ -13,4 +13,5 @@ public interface Constants {
     String STOP = "STOP";
     String PlAYBACK_PAUSE = "Playback pause";
     String PLAYBACK_RESUME = "Playback Resume";
+    String STOP_FROM_NOTIFICATION = "Stopped from notifications";
 }

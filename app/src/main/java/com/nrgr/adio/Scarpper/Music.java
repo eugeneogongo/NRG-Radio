@@ -1,6 +1,8 @@
 package com.nrgr.adio.Scarpper;
 
-public class Music {
+import java.io.Serializable;
+
+public class Music implements Serializable {
 
     private boolean isplaying = false;
 

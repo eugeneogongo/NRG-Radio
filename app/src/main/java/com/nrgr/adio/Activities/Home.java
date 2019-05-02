@@ -12,7 +12,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -31,21 +33,31 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class Home extends AppCompatActivity implements View.OnClickListener {
 
-
-
     private boolean isplaying = false;
     private ImageView nowplayingimage;
     private TextView nowplaying;
     private ImageButton btnplaying;
     private LinearLayout bottomnavigation;
-
-
+    Music np;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         initView();
+
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(np!=null){
+            outState.putSerializable("np",np);
+
+        }
+
     }
 
     private void initView() {
@@ -91,6 +103,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        sendCommand(Constants.STOP);
 
     }
 
@@ -102,7 +115,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Music music) {
 
-
+        np = music;
         if (isplaying) {
             sendCommand(Constants.PLAY_ACTION);
         } else {

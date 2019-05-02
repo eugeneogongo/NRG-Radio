@@ -22,9 +22,12 @@
             android:name=".Media.PlayerService"
             android:exported="false" />
 
-        <activity android:name=".Activities.Home" />
+        <activity android:name=".Activities.Home"
+            android:screenOrientation="portrait"
+            android:supportsPictureInPicture="true"/>
         <activity
             android:name=".Activities.SplashScreen"
+            android:screenOrientation="portrait"
             android:theme="@style/Splashscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

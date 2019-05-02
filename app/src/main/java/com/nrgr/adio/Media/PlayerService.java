@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -169,11 +170,16 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
                 prepareExoPlayerFromURL(tempmusic);
                 exoPlayer.addListener(this);
                 registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
-
                 break;
             case Constants.STOP:
+                stopSelf();
                 stopForeground(true);
                 break;
+            case Constants.STOP_FROM_NOTIFICATION:
+                stopSelf();
+                stopForeground(true);
+                break;
+
         }
         return START_STICKY;
     }
@@ -186,7 +192,7 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
         Intent playIntent = new Intent(this, PlayerService.class);
-        playIntent.setAction(Constants.PAUSE_ACTION);
+        playIntent.setAction(Constants.STOP_FROM_NOTIFICATION);
         PendingIntent pplayIntent = PendingIntent.getService(this, 0,
                 playIntent, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -213,12 +219,15 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
         });
 
 
+        Resources res = getResources();
+        int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
+        int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle(music.getTitle())
                 .setTicker("Now Playing")
                 .setContentText(music.getTitle())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(Bitmap.createScaledBitmap(icon[0], 128, 128, false))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(Bitmap.createScaledBitmap(icon[0],width , height, false))
                 .setContentIntent(pendingIntent)
                 .setChannelId(nrgchannel)
                 .setColorized(true)
@@ -281,9 +290,6 @@ public class PlayerService extends Service implements ExoPlayer.EventListener {
 
     }
 
-    public void stopPlay() {
-        exoPlayer.stop();
-    }
 
     public class ServiceBinder extends Binder {
         public PlayerService getService() {
