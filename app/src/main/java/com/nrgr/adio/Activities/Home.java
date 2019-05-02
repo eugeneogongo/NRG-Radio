@@ -156,6 +156,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
 
 
     }
+
     private void UpdateNowPlaying(Music music) {
         btnplaying.setImageResource(R.drawable.ic_pausebutton);
         bottomnavigation.setVisibility(View.VISIBLE);
@@ -177,6 +178,11 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
         nowplaying.setText(music.getTitle());
     }
 
+    @Override
+    public void onBackPressed() {
+
+        moveTaskToBack(true);
+    }
 
     @Override
     public void onClick(View v) {
