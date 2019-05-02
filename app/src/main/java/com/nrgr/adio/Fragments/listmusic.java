@@ -63,7 +63,9 @@ public class listmusic extends Fragment {
         playlist.setHasFixedSize(true);
         playlist.setAdapter(adapter);
         playlist.setItemAnimator(new DefaultItemAnimator());
-
+        playlist.setItemViewCacheSize(20);
+        playlist.setDrawingCacheEnabled(true);
+        playlist.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
 
     @Override
