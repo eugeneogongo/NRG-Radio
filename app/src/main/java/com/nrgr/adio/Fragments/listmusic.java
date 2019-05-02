@@ -85,17 +85,22 @@ public class listmusic extends Fragment {
        if(event.equals(Constants.NOINTERNET)){
            pageloader.stopProgressAndFailed();
        }else if(event.equals(Constants.DataSetChanged)){
-           adapter.notifyDataSetChanged();
+
+           Music music = adapter.get(PlayListAdapter.previousplaying);
+           music.setIsplaying(true);
+           adapter.notifyItemChanged(PlayListAdapter.previousplaying, music);
+           Music music2 = adapter.get(PlayListAdapter.wasplay);
+           music2.setIsplaying(false);
+           adapter.notifyItemChanged(PlayListAdapter.wasplay, music2);
        }else if(event.equals(Constants.PlAYBACK_PAUSE) && PlayListAdapter.previousplaying != -1) {
            Music music = adapter.get(PlayListAdapter.previousplaying);
            music.setIsplaying(false);
            adapter.notifyItemChanged(PlayListAdapter.previousplaying, music);
-           adapter.notifyDataSetChanged();
        }else if(event.equals(Constants.PLAYBACK_RESUME)){
            Music music = adapter.get(PlayListAdapter.previousplaying);
            music.setIsplaying(true);
            adapter.notifyItemChanged(PlayListAdapter.previousplaying, music);
-           adapter.notifyDataSetChanged();
+
        }
 
     }

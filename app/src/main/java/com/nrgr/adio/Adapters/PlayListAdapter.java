@@ -34,6 +34,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
     private Context context;
     private List<Music> musicList = new ArrayList<>();
     static  boolean wasplaying = false;
+    public  static  int wasplay =-1;
    public static int previousplaying = -1;
     public PlayListAdapter(Context context) {
         this.context = context;
@@ -104,6 +105,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
      */
     private void sendPlayMedia(Music music, int position){
          EventBus.getDefault().post(Constants.START);
+            wasplay = previousplaying;
         new Handler().postDelayed(() -> EventBus.getDefault().postSticky(music), 300);
 
         if(previousplaying !=- 1){
