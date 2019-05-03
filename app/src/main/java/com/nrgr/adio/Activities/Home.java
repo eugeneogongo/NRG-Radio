@@ -12,16 +12,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.nrgr.adio.Fragments.listmusic;
-import com.nrgr.adio.Media.PlayerService;
 import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
+import com.nrgr.adio.Service.PlayerService;
 import com.nrgr.adio.Util.Constants;
 import com.nrgr.adio.Widget.ColorPicker;
 import com.squareup.picasso.Callback;
@@ -128,19 +127,23 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onMessageEvent(String event) {
-        if (event.equals(Constants.START)) {
-            sendCommand(Constants.START);
-            isplaying = true;
-            btnplaying.setImageResource(R.drawable.ic_pausebutton);
-        } else if (event.equals(Constants.PAUSE_ACTION)) {
-            isplaying = false;
-            btnplaying.setImageResource(R.drawable.ic_playbutton);
-            sendCommand(Constants.PAUSE_ACTION);
-        }else if(event.equals(Constants.RESUME)){
-            sendCommand(Constants.RESUME);
-            btnplaying.setImageResource(R.drawable.ic_pausebutton);
-            isplaying = true;
+        switch (event) {
+            case Constants.START:
+                sendCommand(Constants.START);
+                isplaying = true;
+                btnplaying.setImageResource(R.drawable.ic_pausebutton);
+                break;
+            case Constants.PAUSE_ACTION:
+                isplaying = false;
+                btnplaying.setImageResource(R.drawable.ic_playbutton);
+                sendCommand(Constants.PAUSE_ACTION);
+                break;
+            case Constants.RESUME:
+                sendCommand(Constants.RESUME);
+                btnplaying.setImageResource(R.drawable.ic_pausebutton);
+                isplaying = true;
 
+                break;
         }
 
     }

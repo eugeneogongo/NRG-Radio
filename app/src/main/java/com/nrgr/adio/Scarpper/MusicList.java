@@ -14,7 +14,7 @@ public class MusicList {
 
     private final List<Observer> observerArrayList = new ArrayList<>();
 
-    private void notifySuccess(ArrayList<Music> music) {
+    private void notifySuccess(ArrayList<Object> music) {
         for (Observer observer : observerArrayList) observer.OnSuccess(music);
     }
 
@@ -25,7 +25,7 @@ public class MusicList {
 
     private void ParseData() {
 
-        ArrayList<Music> list = new ArrayList<>();
+        ArrayList<Object> list = new ArrayList<>();
         try {
             Document doc = Jsoup.connect("https://nrg.radio").get();
             Elements musicitem = doc.select("#qtchannelslistcontainer a");
@@ -53,7 +53,7 @@ public class MusicList {
     }
 
     public interface Observer {
-        void OnSuccess(ArrayList<Music> musiclist);
+        void OnSuccess(ArrayList<Object> musiclist);
 
         void OnFailure(String error);
     }

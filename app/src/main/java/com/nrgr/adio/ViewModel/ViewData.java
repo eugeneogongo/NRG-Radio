@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.nrgr.adio.Scarpper.Music;
 import com.nrgr.adio.Scarpper.MusicList;
 import com.nrgr.adio.Util.Constants;
 
@@ -17,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewData extends ViewModel {
-    MutableLiveData<List<Music>> playlist;
+    private MutableLiveData<List<Object>> playlist;
 
-    public LiveData<List<Music>> getPlaylist() {
+    public LiveData<List<Object>> getPlaylist() {
         if (playlist == null) {
             playlist = new MutableLiveData<>();
             LoadData();
@@ -39,7 +38,7 @@ public class ViewData extends ViewModel {
             MusicList List = new MusicList();
             List.addOnCompleteListener(new MusicList.Observer() {
                 @Override
-                public void OnSuccess(ArrayList<Music> musiclist) {
+                public void OnSuccess(ArrayList<Object> musiclist) {
                     playlist.postValue(musiclist);
                 }
 

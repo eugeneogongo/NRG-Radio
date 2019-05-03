@@ -19,7 +19,7 @@
         <activity android:name=".Activities.NowPlaying"></activity>
 
         <service
-            android:name=".Media.PlayerService"
+            android:name=".Service.PlayerService"
             android:exported="false" />
 
         <activity android:name=".Activities.Home"
@@ -35,6 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1444752230904711~3705797485" />
     </application>
 
 </manifest>
