@@ -15,7 +15,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,15 +22,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.cast.framework.CastSession;
-import com.google.android.gms.cast.framework.Session;
-import com.google.android.gms.cast.framework.SessionManager;
-import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.images.WebImage;
 import com.mradzinski.caster.Caster;
-import com.mradzinski.caster.MediaData;
 import com.nrgr.adio.Fragments.listmusic;
 import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
@@ -68,7 +60,10 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onConnected() {
 
-                Log.d("Caster", "Connected with Chromecast");
+                if (isplaying) {
+                    sendCommand(Constants.PAUSE_ACTION);
+                    sendCommand(Constants.RESUME);
+                }
             }
 
             @Override
@@ -155,6 +150,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
                 isplaying = false;
                 sendCommand(Constants.PAUSE_ACTION);
             }
+            bottomnavigation.setVisibility(View.GONE);
             CasttoTV(music);
             return;
         }

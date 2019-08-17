@@ -60,6 +60,7 @@ public class listmusic extends Fragment {
         pageloader = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
         pageloader.setTitle("Loading");
         pageloader.show();
+        pageloader.setCanceledOnTouchOutside(false);
         playlist = view.findViewById(R.id.playlist);
         adapter = new PlayListAdapter(getActivity());
         adapter.setHasStableIds(true);
