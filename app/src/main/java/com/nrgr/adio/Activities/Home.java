@@ -4,19 +4,34 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.Session;
+import com.google.android.gms.cast.framework.SessionManager;
+import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.common.images.WebImage;
+import com.mradzinski.caster.Caster;
+import com.mradzinski.caster.MediaData;
 import com.nrgr.adio.Fragments.listmusic;
 import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
@@ -38,16 +53,38 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     private ImageButton btnplaying;
     private LinearLayout bottomnavigation;
     Music np;
+    private Caster caster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        caster = Caster.create(this);
+        caster.addMiniController();
         initView();
+        caster.setOnConnectChangeListener(new Caster.OnConnectChangeListener() {
+            @Override
+            public void onConnected() {
+
+                Log.d("Caster", "Connected with Chromecast");
+            }
+
+            @Override
+            public void onDisconnected() {
+                Log.d("Caster","Disconnected from Chromecast");
+            }
+        });
 
     }
 
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        caster.addMediaRouteMenuItem(menu, true);
+
+        return true;
+    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -95,7 +132,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
        @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
-
         super.onStop();
     }
 
@@ -114,6 +150,14 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Music music) {
 
+        if(caster.isConnected()){
+            if(isplaying){
+                isplaying = false;
+                sendCommand(Constants.PAUSE_ACTION);
+            }
+            CasttoTV(music);
+            return;
+        }
         np = music;
         if (isplaying) {
             sendCommand(Constants.PLAY_ACTION);
@@ -123,6 +167,17 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
         }
 
         UpdateNowPlaying(music);
+    }
+    private void CasttoTV(Music music) {
+        MediaMetadata musicmetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+        musicmetadata.addImage(new WebImage(Uri.parse(music.getPiclink())));
+        musicmetadata.putString(MediaMetadata.KEY_ALBUM_TITLE,music.getTitle());
+        musicmetadata.putString(MediaMetadata.KEY_ARTIST,"NRG Radio");
+        musicmetadata.putString(MediaMetadata.KEY_TITLE, music.getTitle());
+       MediaInfo info = new MediaInfo.Builder(music.getStreamlink()).setContentType("audio/*")
+               .setMetadata(musicmetadata).build();
+        caster.getPlayer().loadMediaAndPlay(info);
+        Caster.configure("NRG Radio");
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

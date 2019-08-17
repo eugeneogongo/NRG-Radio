@@ -1,3 +1,3 @@
 # NrG Radio
 
-Listen to latest news
+## Listen to different genre of music in one station
