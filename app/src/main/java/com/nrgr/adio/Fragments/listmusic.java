@@ -2,7 +2,6 @@ package com.nrgr.adio.Fragments;
 
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.nrg.radio.PageLoader;
 import com.nrgr.adio.Adapters.PlayListAdapter;
 import com.nrgr.adio.R;
 import com.nrgr.adio.Scarpper.Music;
@@ -31,6 +25,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Objects;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +40,7 @@ public class listmusic extends Fragment {
     private PlayListAdapter adapter;
     private RecyclerView playlist;
     private ViewData _View_data;
-    private PageLoader pageloader;
+    private SweetAlertDialog pageloader;
 
     public listmusic() {
         // Required empty public constructor
@@ -56,14 +52,14 @@ public class listmusic extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listmusic, container, false);
-
         initView(view);
         return view;
     }
 
     private void initView(View view) {
-        pageloader = view.findViewById(R.id.pageloader);
-        pageloader.startProgress();
+        pageloader = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+        pageloader.setTitle("Loading");
+        pageloader.show();
         playlist = view.findViewById(R.id.playlist);
         adapter = new PlayListAdapter(getActivity());
         adapter.setHasStableIds(true);
@@ -92,7 +88,7 @@ public class listmusic extends Fragment {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onMessageEvent(String event) {
        if(event.equals(Constants.NOINTERNET)){
-           pageloader.stopProgressAndFailed();
+
        }else if(event.equals(Constants.DataSetChanged)){
 
            Music music = (Music) adapter.get(PlayListAdapter.currentplaying);
@@ -117,101 +113,19 @@ public class listmusic extends Fragment {
 
     }
 
-    /**
-     * Sets up and loads the banner ads.
-     */
-    private void loadBannerAds() {
-        // Load the first banner ad in the items list (subsequent ads will be loaded automatically
-        // in sequence).
-        loadBannerAd(4);
-    }
-
-    /**
-     * Loads the banner ads in the items list.
-     */
-    private void loadBannerAd(final int index) {
-
-        if (index >= adapter.getMusicList().size()) {
-            return;
-        }
-
-        Object item = adapter.getMusicList().get(index);
-        if (!(item instanceof AdView)) {
-            throw new ClassCastException("Expected item at index " + index + " to be a banner ad"
-                    + " ad.");
-        }
-
-        final AdView adView = (AdView) item;
-
-        // Set an AdListener on the AdView to wait for the previous banner ad
-        // to finish loading before loading the next ad in the items list.
-        adView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                // The previous banner ad loaded successfully, call this method again to
-                // load the next ad in the items list.
-
-                Log.i(listmusic.class.getCanonicalName(), "Added loaded successfully");
-                loadBannerAd(index + ITEMS_PER_AD);
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // The previous banner ad failed to load. Call this method again to load
-                // the next ad in the items list.
-                Log.e("MainActivity", "The previous banner ad failed to load. Attempting to"
-                        + " load the next banner ad in the items list.");
-                loadBannerAd(index + ITEMS_PER_AD);
-            }
-        });
-
-        // Load the banner ad.
-        adView.loadAd(new AdRequest.Builder().build());
-    }
-
-    private void addBannerAds() {
-        // Loop through the items array and place a new banner ad in every ith position in
-        // the items List.
-        for (int i = 4; i <= adapter.getMusicList().size(); i += ITEMS_PER_AD) {
-            final AdView adView = new AdView(getContext());
-            adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
-            adView.setAdUnitId(AD_UNIT_ID);
-            adapter.addItem(i, adView);
-            adapter.notifyDataSetChanged();
-        }
-    }
 
     @Override
     public void onDestroy() {
-        for (Object item : adapter.getMusicList()) {
-            if (item instanceof AdView) {
-                AdView adView = (AdView) item;
-                adView.destroy();
-            }
-        }
         super.onDestroy();
     }
 
     @Override
     public void onResume() {
-        for (Object item : adapter.getMusicList()) {
-            if (item instanceof AdView) {
-                AdView adView = (AdView) item;
-                adView.resume();
-            }
-        }
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        for (Object item : adapter.getMusicList()) {
-            if (item instanceof AdView) {
-                AdView adView = (AdView) item;
-                adView.pause();
-            }
-        }
         super.onPause();
     }
 
@@ -223,10 +137,7 @@ public class listmusic extends Fragment {
             adapter.setMusicList(object);
             adapter.notifyDataSetChanged();
             playlist.setVisibility(View.VISIBLE);
-            pageloader.stopProgress();
-            pageloader.setVisibility(View.GONE);
-            addBannerAds();
-            loadBannerAds();
+            pageloader.dismissWithAnimation();
         });
     }
 
